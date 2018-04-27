@@ -12,15 +12,24 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 )
 
+// PathParameters holds path params
+type PathParameters map[string]interface{}
+
+// QueryParameters holds query string params
+type QueryParameters map[string]interface{}
+
+// AuthParameters holds auth params that
+type AuthParameters map[string]interface{}
+
 // Input data for current invocation
 type Input struct {
-	Service     string
-	Resource    string
-	Body        interface{}
-	Method      string
-	PathParams  map[string]interface{}
-	QueryParams map[string]interface{}
-	AuthData    map[string]interface{}
+	Service        string
+	Resource       string
+	Body           interface{}
+	Method         string
+	PathParams     PathParameters
+	QueryParams    QueryParameters
+	AuthParameters AuthParameters
 }
 
 // Invoke Lambda function with payload based on input
@@ -87,9 +96,9 @@ func encodePayload(input Input) ([]byte, error) {
 		"httpMethod": method,
 	}
 
-	if len(input.AuthData) > 0 {
+	if len(input.AuthParameters) > 0 {
 		payload["requestContext"] = map[string]interface{}{
-			"authorizer": input.AuthData,
+			"authorizer": input.AuthParameters,
 		}
 	}
 	if len(input.PathParams) > 0 {
