@@ -20,6 +20,7 @@ type Input struct {
 	Method      string
 	PathParams  map[string]interface{}
 	QueryParams map[string]interface{}
+	AuthData    map[string]interface{}
 }
 
 // Invoke Lambda function with payload based on input
@@ -86,6 +87,11 @@ func encodePayload(input Input) ([]byte, error) {
 		"httpMethod": method,
 	}
 
+	if len(input.AuthData) > 0 {
+		payload["requestContext"] = map[string]interface{}{
+			"authorizer": input.AuthData,
+		}
+	}
 	if len(input.PathParams) > 0 {
 		payload["pathParameters"] = input.PathParams
 	}
