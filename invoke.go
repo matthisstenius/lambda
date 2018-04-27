@@ -18,8 +18,8 @@ type Input struct {
 	Resource    string
 	Body        interface{}
 	Method      string
-	PathParams  map[string]string
-	QueryParams map[string]string
+	PathParams  map[string]interface{}
+	QueryParams map[string]interface{}
 }
 
 // Invoke Lambda function with payload based on input
