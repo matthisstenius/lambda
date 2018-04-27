@@ -14,9 +14,12 @@ import (
 
 // Input data for current invocation
 type Input struct {
-	Service  string
-	Resource string
-	Body     interface{}
+	Service     string
+	Resource    string
+	Body        interface{}
+	Method      string
+	PathParams  map[string]string
+	QueryParams map[string]string
 }
 
 // Invoke Lambda function with payload based on input
@@ -24,17 +27,11 @@ func Invoke(input Input, out interface{}) error {
 	sess, _ := session.NewSession()
 	client := sdk.New(sess)
 
-	body, err := json.Marshal(input.Body)
+	payload, err := encodePayload(input)
 	if err != nil {
-		logger.WithFields(logger.Fields{"error": err, "body": input.Body}).Error("Lambda::Invoke() error during marshal")
-		return errors.New("could not marshal body")
+		logger.WithFields(logger.Fields{"error": err}).Error("Lambda::Invoke() Could not encode payload ")
+		return errors.New("could not encode payload")
 	}
-
-	payload, _ := json.Marshal(map[string]interface{}{
-		"resource":   input.Resource,
-		"body":       string(body),
-		"httpMethod": http.MethodPost,
-	})
 
 	reqInput := sdk.InvokeInput{
 		FunctionName: aws.String(input.Service),
@@ -75,4 +72,25 @@ func Invoke(input Input, out interface{}) error {
 		return errors.New("error during unmarshal")
 	}
 	return nil
+}
+
+func encodePayload(input Input) ([]byte, error) {
+	method := http.MethodGet
+	if input.Method != "" {
+		method = input.Method
+	}
+
+	payload := map[string]interface{}{
+		"resource":   input.Resource,
+		"body":       input.Body,
+		"httpMethod": method,
+	}
+
+	if len(input.PathParams) > 0 {
+		payload["pathParameters"] = input.PathParams
+	}
+	if len(input.QueryParams) > 0 {
+		payload["queryParameters"] = input.QueryParams
+	}
+	return json.Marshal(payload)
 }
