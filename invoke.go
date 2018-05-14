@@ -61,7 +61,7 @@ func Invoke(input Input, out interface{}) error {
 	if err := json.Unmarshal(output.Payload, &response); err != nil {
 		logger.WithFields(logger.Fields{
 			"error":   err,
-			"payload": output.Payload,
+			"payload": string(output.Payload),
 		}).Error("Lambda::Invoke() error during unmarshal of output payload")
 		return errors.New("error during unmarshal")
 	}
@@ -69,7 +69,7 @@ func Invoke(input Input, out interface{}) error {
 	if response.StatusCode != http.StatusOK {
 		logger.WithFields(logger.Fields{
 			"error":   err,
-			"payload": output.Payload,
+			"payload": string(output.Payload),
 		}).Warning("Lambda::Invoke() none 200 status code")
 		return errors.New("none 200 status code")
 	}
@@ -77,7 +77,7 @@ func Invoke(input Input, out interface{}) error {
 	if err := json.Unmarshal([]byte(response.Body), out); err != nil {
 		logger.WithFields(logger.Fields{
 			"error":   err,
-			"payload": response.Body,
+			"payload": string(response.Body),
 		}).Error("Lambda::Invoke() error during unmarshal of response body")
 		return errors.New("error during unmarshal")
 	}
