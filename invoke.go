@@ -8,8 +8,8 @@ import (
 	"errors"
 	"net/http"
 
-	"bitbucket.org/mstenius/logger"
 	"github.com/aws/aws-sdk-go/aws"
+	"github.com/matthisstenius/logger"
 )
 
 // PathParameters holds path params
