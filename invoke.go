@@ -105,7 +105,7 @@ func encodePayload(input Input) ([]byte, error) {
 		payload["pathParameters"] = input.PathParams
 	}
 	if len(input.QueryParams) > 0 {
-		payload["queryParameters"] = input.QueryParams
+		payload["queryStringParameters"] = input.QueryParams
 	}
 	return json.Marshal(payload)
 }
